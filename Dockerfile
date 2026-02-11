@@ -13,11 +13,13 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN php artisan config:clear
-RUN php artisan cache:clear
-RUN php artisan migrate --force || true
-
+# Apache docroot -> /public
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
+# ✅ add start script
+RUN chmod +x /var/www/html/render-start.sh
+
 EXPOSE 80
-CMD ["apache2-foreground"]
+
+# ✅ replace CMD
+CMD ["/var/www/html/render-start.sh"]
